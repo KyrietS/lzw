@@ -1,0 +1,50 @@
+= LZW (Lempel-Ziv-Welch) Dictionary Coding
+
+A simple implementation of compression method known as LZW (Lempel-Ziv-Welch). LZW is a loseless data compression algorithm.
+
+== Usage
+
+_TBD_
+
+== Project structure
+
+There are currently 3 projects in this workspace.
+
+
+[%autowidth]
+|===
+^|Project | Description
+
+^.^|LZW_Core
+|Core functionality of LZW coding. All logic is there including file i/o. This project produces [underline]#static library# that is used in _LZW_CLI_ and _LZW_Core_Tests_ as a dependency.
+
+^.^|LZW_CLI
+|Command-Line Interface for _LZW_Core_ functions. This project produces executable program called `lzw` (by default).
+
+^.^|LZW_Core_Tests
+|Collection of unit tests for _LZW_Core_ functionalities. This project produces executable with embeded CLI from Catch2. For more info read https://github.com/catchorg/Catch2/blob/master/docs/command-line.md[official docs].
+|===
+
+=== External libraries
+
+_LZW_Core_ library doesn't have any external dependencies except C++ standard library.
+
+* https://github.com/CLIUtils/CLI11[CLI11] provides command-line arguments parser for _LZW_CLI_.
+* https://github.com/catchorg/Catch2[Catch2] is used in _LZW_Core_Tests_ as a testing framework.
+
+== Building
+
+You need https://premake.github.io/download.html[Premake5] to easily generate project files (e.g. for Visual Studio, Code::Blocks, Xcode, GNU Make and more)
+
+In root folder run `premake5` with an argument depending on IDE you want to use. For example, run: `premake5 vs2019` if you want to generate project for Visual Studio 2019.
+
+== Tests
+
+Project _LZW_Core_Tests_ contains all the tests for _LZW_Core_. You can build it and run executable `lzw_core_tests` to verify tests.
+
+== License
+
+Copyright © 2020 KyrietS +
+Use of this software is granted under the terms of the MIT License.
+
+See the link:LICENCE[LICENSE] for the full license text.
