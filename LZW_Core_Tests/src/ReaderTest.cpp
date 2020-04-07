@@ -51,6 +51,7 @@ SCENARIO("Reader opens a new file", "[Reader]")
 
 			THEN("eof flag is set")
 			{
+				CHECK(reader.success() == true);
 				CHECK(reader.eof() == true);
 			}
 		}
@@ -60,6 +61,7 @@ SCENARIO("Reader opens a new file", "[Reader]")
 	{
 		std::ofstream(path) << "a";
 		Reader reader(path);
+		CHECK(reader.success() == true);
 		CHECK(reader.eof() == false);
 		reader.read(8);
 		CHECK(reader.eof() == true);
@@ -72,6 +74,11 @@ SCENARIO("Reader opens a new file", "[Reader]")
 				CHECK(reader.read(4) == 0);
 				CHECK(reader.read(8) == 0);
 				CHECK(reader.read(32) == 0);
+
+				AND_THEN("success flag is set to false")
+				{
+					CHECK(reader.success() == false);
+				}
 			}
 		}
 	}
@@ -95,10 +102,12 @@ SCENARIO("Reader reads numbers from a file", "[Reader]")
 			THEN("number is correct")
 			{
 				CHECK(n == 0xA7);
-			}
-			AND_THEN("eof flag is set")
-			{
-				CHECK(reader.eof() == true);
+
+				AND_THEN("eof flag is set")
+				{
+					CHECK(reader.success() == true);
+					CHECK(reader.eof() == true);
+				}
 			}
 		}
 
@@ -111,10 +120,12 @@ SCENARIO("Reader reads numbers from a file", "[Reader]")
 			{
 				CHECK(n1 == 0xA);
 				CHECK(n2 == 0x7);
-			}
-			AND_THEN("eof flag is set")
-			{
-				CHECK(reader.eof() == true);
+
+				AND_THEN("eof flag is set")
+				{
+					CHECK(reader.success() == true);
+					CHECK(reader.eof() == true);
+				}
 			}
 		}
 		WHEN("one 3-bit number is read")
@@ -124,11 +135,14 @@ SCENARIO("Reader reads numbers from a file", "[Reader]")
 			THEN("number is correct")
 			{
 				CHECK(n == 0b101);
+
+				AND_THEN("eof flag is not set")
+				{
+					CHECK(reader.success() == true);
+					CHECK(reader.eof() == false);
+				}
 			}
-			AND_THEN("eof flag is not set")
-			{
-				CHECK(reader.eof() == false);
-			}
+
 		}
 	}
 	fs::remove(path);
