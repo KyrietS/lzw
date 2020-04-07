@@ -2,6 +2,7 @@
 #include "DictionaryCoder.hpp"
 
 #include <string>
+#include <vector>
 
 class LZWCoder : public DictionaryCoder
 {
