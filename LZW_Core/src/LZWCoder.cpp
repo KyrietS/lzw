@@ -6,12 +6,12 @@
 
 
 
-void LZWCoder::encode(std::string path_in, std::string path_out)
+void LZWCoder::encode(const std::string & path_in, const std::string &path_out)
 {
 	// Not implemented yet.
 }
 
-void LZWCoder::decode(std::string path_in, std::string path_out)
+void LZWCoder::decode(const std::string & path_in, const std::string & path_out)
 {
 	// Not implemented yet.
 }
