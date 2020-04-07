@@ -92,6 +92,24 @@ SCENARIO("Writer writes number to a file", "[Writer]")
 			}
 		}
 
+		WHEN("number is written on 9 bits")
+		{
+			// number is saved as 0'0001'0111|000'0000 = 0000'1011'1000'0000 = 0x0B80
+			writer.write(n, 9);
+			writer.flush();
+			THEN("number is saved correctly")
+			{
+				std::ifstream file(path, std::ifstream::binary);
+				unsigned char byte1 = file.get();
+				unsigned char byte2 = file.get();
+				int eof = file.get();
+
+				CHECK(byte1 == 0x0B);
+				CHECK(byte2 == 0x80);
+				CHECK(eof == EOF);
+			}
+		}
+
 		WHEN("number is written on 11 bits")
 		{
 			// number is saved as 000'0001'0111|0'0000 = 0000'0010'1110'0000
@@ -110,6 +128,30 @@ SCENARIO("Writer writes number to a file", "[Writer]")
 
 				CHECK(firstByte == 0x02);
 				CHECK(secondByte == 0xE0);
+				CHECK(eof == EOF);
+			}
+		}
+	}
+
+	GIVEN("letter 'a'")
+	{
+		Writer writer(path);
+		uint64_t n = 97; // 'a' = 0x61 = 0110'0001
+
+		WHEN("number is written on 9 bits")
+		{
+			// number is saved as 0'0110'0001|000'0000 = 0011'0000'1000'0000 = 0x3080
+			writer.write(n, 9);
+			writer.flush();
+			THEN("number is saved correctly")
+			{
+				std::ifstream file(path, std::ifstream::binary);
+				unsigned char byte1 = file.get();
+				unsigned char byte2 = file.get();
+				int eof = file.get();
+
+				CHECK(byte1 == 0x30);
+				CHECK(byte2 == 0x80);
 				CHECK(eof == EOF);
 			}
 		}
