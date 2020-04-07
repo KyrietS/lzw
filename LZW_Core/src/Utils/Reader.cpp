@@ -19,12 +19,18 @@ uint64_t Reader::read(unsigned int bits)
 	uint64_t bit{ 0 };
 	for (unsigned int i = 0; i < bits; i++)
 	{
+		notEnoughBits |= bitReader.eof();
 		bit = (uint64_t)bitReader.read();
 		result <<= 1;
 		result = result | bit;
 	}
 
 	return result;
+}
+
+bool Reader::success()
+{
+	return notEnoughBits == false;
 }
 
 bool Reader::eof()

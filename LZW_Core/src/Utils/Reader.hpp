@@ -13,8 +13,12 @@ public:
 	Reader(const std::string& path);
 	uint64_t read(unsigned int bits);
 
+	// Checks if previous read operation was successful.
+	bool success();
+	// Checks if end of file was encountered.
 	bool eof();
 private:
 	BitReader bitReader;
+	bool notEnoughBits = false;
 };
 
