@@ -111,5 +111,4 @@ void printStats(Statistics stats)
     std::cout << "output entropy:   " << stats.outputEntropy() << std::endl;
     std::cout << "compression rate: " << stats.compressionRatio() * 100 << "%" << std::endl;
     std::cout << std::defaultfloat;
-    std::cout.precision();
 }

@@ -3,7 +3,7 @@
 //
 
 #include "LZWCoder.hpp"
-#include "Statistics.h"
+#include "Statistics.hpp"
 #include "Utils/Writer.hpp"
 #include "Utils/Reader.hpp"
 
