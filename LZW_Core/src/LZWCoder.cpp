@@ -3,6 +3,7 @@
 //
 
 #include "LZWCoder.hpp"
+#include "Statistics.h"
 #include "Utils/Writer.hpp"
 #include "Utils/Reader.hpp"
 
@@ -14,9 +15,10 @@
 
 using byte_t = unsigned char;
 
-void LZWCoder::encode(const std::string & path_in, const std::string &path_out)
+Statistics LZWCoder::encode(const std::string & path_in, const std::string &path_out)
 {
 	std::ifstream in(path_in, std::ifstream::binary);
+	std::vector<uint64_t> inStats(256);
 	Writer out(path_out);
 	std::map<std::vector<byte_t>, uint64_t> dict;
 
@@ -39,6 +41,7 @@ void LZWCoder::encode(const std::string & path_in, const std::string &path_out)
 			prefixCode = dict[prefix];
 
 			in.get(); // read byte from stream
+			inStats[byte]++;
 		}
 		// emit id of prefix on 'numOfBits' bits.
 		unsigned int numOfBits = (unsigned int)ceil(log2(dict.size()));
@@ -47,6 +50,9 @@ void LZWCoder::encode(const std::string & path_in, const std::string &path_out)
 		// add longer prefix to dictionary
 		dict[prefix] = dict.size();
 	}
+
+	// Fill sats object and return
+	return Statistics(inStats, std::vector<uint64_t>(out.stats.begin(), out.stats.end()));
 }
 
 void LZWCoder::decode(const std::string & path_in, const std::string & path_out)

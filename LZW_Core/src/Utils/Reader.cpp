@@ -5,7 +5,7 @@
 #include <exception>
 
 Reader::Reader(const std::string& path)
-	: bitReader(path) {}
+	: bitReader(path), statsBuffer(8) {}
 
 uint64_t Reader::read(unsigned int bits)
 {
@@ -23,6 +23,14 @@ uint64_t Reader::read(unsigned int bits)
 		bit = (uint64_t)bitReader.read();
 		result <<= 1;
 		result = result | bit;
+
+		// update stats
+		statsBuffer.write((bool)bit);
+		if (statsBuffer.size() == statsBuffer.capacity)
+		{
+			unsigned char byte = statsBuffer.readByte();
+			stats[byte]++;
+		}
 	}
 
 	return result;

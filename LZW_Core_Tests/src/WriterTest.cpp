@@ -158,3 +158,73 @@ SCENARIO("Writer writes number to a file", "[Writer]")
 	}
 	fs::remove(path);
 }
+
+SCENARIO("Writer collects stats about written bytes", "[Writer][Stats]")
+{
+	WHEN("no data is written")
+	{
+		Writer writer(path);
+		THEN("numbers' stats are zeros")
+		{
+			for (int i = 0; i <= 255; i++)
+				REQUIRE(writer.stats[i] == 0);
+		}
+	}
+
+	WHEN("number 7 is written on 1 byte")
+	{
+		Writer writer(path);
+		writer.write(7, 8); // write '7' on 8 bits.
+		writer.flush();
+
+		THEN("number of 7s in stats is 1")
+		{
+			CHECK(writer.stats[6] == 0);
+			CHECK(writer.stats[7] == 1);
+			CHECK(writer.stats[8] == 0);
+		}
+	}
+
+	WHEN("number 6 is written on 4 bits")
+	{
+		Writer writer(path);
+		writer.write(6, 4); // write '6' on 4 bits
+							// 0110 -> 0110'0000
+							// number->^^^^|**** <- padding
+		writer.flush();
+		THEN("byte 0x60 occured once")
+		{
+			CHECK(writer.stats[0x60] == 1);
+		}
+	}
+
+	WHEN("number 3 is written on 9 bits")
+	{
+		Writer writer(path);
+		writer.write(3, 9); // write '3' on 9 bits
+							// 0'0000'0011 -> 0'0000'0011|000'0000
+							//      number -> ^^^^^^^^^^^|******** <- padding
+							// result: 0000'0001'1000'0000 = 0x0180
+		writer.flush();
+		THEN("byte 0x01 and 0x80 occured once")
+		{
+			CHECK(writer.stats[0x01] == 1);
+			CHECK(writer.stats[0x80] == 1);
+		}
+	}
+
+	WHEN("number 0 is written on 9 bits")
+	{
+		Writer writer(path);
+		writer.write(0, 9); // write '0' on 1 bit
+							// 0'0000'0000 -> 0'0000'0000|000'0000
+							//      number -> ^^^^^^^^^^^|******** <- padding
+							// result: 0000'0000'0000'0000
+		writer.flush();
+		THEN("byte 0x00 occured twice")
+		{
+			CHECK(writer.stats[0x00] == 2);
+		}
+	}
+	fs::remove(path);
+}
