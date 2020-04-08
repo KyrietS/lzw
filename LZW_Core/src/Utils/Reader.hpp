@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <array>
 #include <cstdint>
 #include <fstream>
 
@@ -10,6 +11,8 @@
 class Reader
 {
 public:
+	std::array<uint64_t, 256> stats = {};
+
 	Reader(const std::string& path);
 	uint64_t read(unsigned int bits);
 
@@ -20,5 +23,6 @@ public:
 private:
 	BitReader bitReader;
 	bool notEnoughBits = false;
+	BitBuffer statsBuffer;
 };
 

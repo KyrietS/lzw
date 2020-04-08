@@ -13,7 +13,7 @@ constexpr uint64_t powerOf(uint64_t a, uint64_t n)
 }
 
 Writer::Writer(const std::string& path)
-	: bitWriter(path) {}
+	: bitWriter(path), statsBuffer(8) {}
 
 void Writer::write(uint64_t n, unsigned int bits)
 {
@@ -33,10 +33,23 @@ void Writer::write(uint64_t n, unsigned int bits)
 		mask >>= 1;
 		bool bit = n & mask;
 		bitWriter.write(bit);
+
+		// update stats
+		statsBuffer.write(bit);
+		if (statsBuffer.size() == statsBuffer.capacity)
+		{
+			unsigned char byte = statsBuffer.readByte();
+			stats[byte]++;
+		}
 	}
 }
 
 void Writer::flush()
 {
 	bitWriter.flush();
+	
+	// update stats
+	auto bytes = statsBuffer.readAllBytes();
+	if (bytes.size() > 0)
+		stats[bytes[0]]++;
 }

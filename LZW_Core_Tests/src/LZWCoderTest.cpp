@@ -164,7 +164,7 @@ SCENARIO("Decoding a file", "[Decoder]")
 
 		WHEN("file is encoded")
 		{
-			coder.encode(encodePath, decodePath);
+			Statistics stats = coder.encode(encodePath, decodePath);
 			fs::remove(encodePath);
 
 			THEN("file can be decoded")
@@ -175,6 +175,12 @@ SCENARIO("Decoding a file", "[Decoder]")
 				for (int byte = 0; byte < 255; byte++)
 					REQUIRE(file.get() == byte);
 				CHECK(file.get() == EOF);
+			}
+			THEN("stats are collected")
+			{
+				CHECK(stats.inputEntropy() > 1.0);
+				CHECK(stats.outputEntropy() > 1.0);
+				CHECK(stats.compressionRatio() <= 0.0);
 			}
 		}
 	}

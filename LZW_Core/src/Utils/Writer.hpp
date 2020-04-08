@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <array>
 #include <cstdint>
 #include <fstream>
 
@@ -10,11 +11,14 @@
 class Writer
 {
 public:
+	std::array<uint64_t, 256> stats = {};
+
 	Writer(const std::string& path);
 	void write(uint64_t n, unsigned int bits);
 
 	void flush();
 private:
 	BitWriter bitWriter;
+	BitBuffer statsBuffer;
 };
 
