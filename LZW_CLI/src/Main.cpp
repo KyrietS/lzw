@@ -5,6 +5,8 @@
 
 #include "LZWCoder.hpp"
 
+void printStats(Statistics stats);
+
 bool endsWith(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
         return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
@@ -90,7 +92,9 @@ int main(int argc, char** argv)
     LZWCoder coder;
 
     if (encode) {
-        coder.encode(path_in, path_out);
+        Statistics stats = coder.encode(path_in, path_out);
+        if (print_stats)
+            printStats(stats);
     }
     else if (decode) {
         coder.decode(path_in, path_out);
@@ -99,3 +103,13 @@ int main(int argc, char** argv)
     return 0;
 }
 
+void printStats(Statistics stats)
+{
+    std::cout.precision(2);
+    std::cout << std::fixed;
+    std::cout << "input entropy:    " << stats.inputEntropy() << std::endl;
+    std::cout << "output entropy:   " << stats.outputEntropy() << std::endl;
+    std::cout << "compression rate: " << stats.compressionRatio() * 100 << "%" << std::endl;
+    std::cout << std::defaultfloat;
+    std::cout.precision();
+}
