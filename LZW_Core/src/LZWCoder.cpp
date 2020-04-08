@@ -4,38 +4,46 @@
 
 #include "LZWCoder.hpp"
 #include "Statistics.hpp"
+#include "VectorHash.hpp"
 #include "Utils/Writer.hpp"
 #include "Utils/Reader.hpp"
 
 #include <fstream>
-#include <map>
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include <unordered_map> // hash map used to be better than map for dictionary key
 
 using byte_t = unsigned char;
 
 Statistics LZWCoder::encode(const std::string & path_in, const std::string &path_out)
 {
+	// Standard implementation of hash function for std::string used to be better than
+	// my own located in file "VectorHash.hpp". In case when the above is not true you
+	// can use std::vector<byte_t> as dictionary key to increase encoding speed.
+
+	//using DictKey = std::vector<byte_t>;
+	using DictKey = std::string;
+
 	std::ifstream in(path_in, std::ifstream::binary);
 	std::vector<uint64_t> inStats(256);
 	Writer out(path_out);
-	std::map<std::vector<byte_t>, uint64_t> dict;
+	std::unordered_map<DictKey, uint64_t> dict; 
 
 	// Initialise dictionary with all bytes
 	for (int byte = 0; byte <= 255; byte++)
-		dict[{(byte_t)byte}] = byte;
+		dict[DictKey(1, byte)] = byte;
 
 	while (!in.eof())
 	{
 		// Find longest prefix
-		std::vector<byte_t> prefix;
+		DictKey prefix;
 		uint64_t prefixCode{};
 		while (in.peek() != EOF)
 		{
 			byte_t byte = in.peek();
-
 			prefix.push_back(byte);
+
 			if (dict.count(prefix) == 0) // if prefix doesn't belong to dictionary
 				break;
 			prefixCode = dict[prefix];
@@ -43,6 +51,7 @@ Statistics LZWCoder::encode(const std::string & path_in, const std::string &path
 			in.get(); // read byte from stream
 			inStats[byte]++;
 		}
+
 		// emit id of prefix on 'numOfBits' bits.
 		unsigned int numOfBits = (unsigned int)ceil(log2(dict.size()));
 		out.write(prefixCode, numOfBits);
