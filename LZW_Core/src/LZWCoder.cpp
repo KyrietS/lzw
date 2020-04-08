@@ -7,6 +7,7 @@
 #include "VectorHash.hpp"
 #include "Utils/Writer.hpp"
 #include "Utils/Reader.hpp"
+#include "Utils/FileSize.hpp"
 
 #include <fstream>
 #include <vector>
@@ -30,6 +31,10 @@ Statistics LZWCoder::encode(const std::string & path_in, const std::string &path
 	Writer out(path_out);
 	std::unordered_map<DictKey, uint64_t> dict; 
 
+	// for progress bar
+	long filesize = getFileSize(path_in);
+	uint64_t bytesRead = 0;
+
 	// Initialise dictionary with all bytes
 	for (int byte = 0; byte <= 255; byte++)
 		dict[DictKey(1, byte)] = byte;
@@ -50,6 +55,10 @@ Statistics LZWCoder::encode(const std::string & path_in, const std::string &path
 
 			in.get(); // read byte from stream
 			inStats[byte]++;
+
+			// update progress bar
+			bytesRead++;
+			updateProgress((double)(bytesRead) / filesize);
 		}
 
 		// emit id of prefix on 'numOfBits' bits.
@@ -73,6 +82,10 @@ void LZWCoder::decode(const std::string & path_in, const std::string & path_out)
 	// Initialise dictionary with all bytes
 	for (int byte = 0; byte <= 255; byte++)
 		dict.push_back({ (byte_t)byte });
+
+	// for progress bar
+	long filesize = getFileSize(path_in);
+	uint64_t bitsRead = 0;
 
 	// Read first byte
 	uint64_t n = in.read(8);
@@ -100,5 +113,28 @@ void LZWCoder::decode(const std::string & path_in, const std::string & path_out)
 		// Emit prefix
 		for (auto byte : prefix)
 			out.put(byte);
+
+		// update progress bar
+		bitsRead += numOfBits;
+		updateProgress((double)(bitsRead + 16) / filesize / 8);
 	}
+}
+
+void LZWCoder::updateProgress(double progress)
+{
+	if (!printProgress || int(progress * 100.0) == currentProgress)
+		return;
+
+	currentProgress = int(progress * 100.0);
+
+	int barWidth = 70;
+	std::cout << "[";
+	int pos = (int)((double)barWidth * progress);
+	for (int i = 0; i < barWidth; ++i) {
+		if (i < pos) std::cout << "=";
+		else if (i == pos) std::cout << ">";
+		else std::cout << " ";
+	}
+	std::cout << "] " << currentProgress << " %\r";
+	std::cout.flush();
 }

@@ -89,7 +89,7 @@ int main(int argc, char** argv)
     }
 
     // The meat.
-    LZWCoder coder;
+    LZWCoder coder(print_stats);
 
     if (encode) {
         Statistics stats = coder.encode(path_in, path_out);
@@ -105,6 +105,7 @@ int main(int argc, char** argv)
 
 void printStats(Statistics stats)
 {
+    std::cout << std::endl;
     std::cout.precision(2);
     std::cout << std::fixed;
     std::cout << "input entropy:    " << stats.inputEntropy() << std::endl;
