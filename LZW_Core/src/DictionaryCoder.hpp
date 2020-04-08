@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "Statistics.h"
+#include "Statistics.hpp"
 
 class DictionaryCoder
 {
