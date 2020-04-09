@@ -105,7 +105,6 @@ int main(int argc, char** argv)
 
 void printStats(Statistics stats)
 {
-    std::cout << std::endl;
     std::cout.precision(2);
     std::cout << std::fixed;
     std::cout << "input entropy:    " << stats.inputEntropy() << std::endl;

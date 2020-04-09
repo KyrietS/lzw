@@ -14,6 +14,8 @@ public:
 private:
 	bool printProgress;
 	int currentProgress = 0;
+	const int progressbarWidth = 70;
 
 	inline void updateProgress(double progress);
+	inline void clearProgress();
 };
