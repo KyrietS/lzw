@@ -4,7 +4,32 @@ A simple implementation of compression method known as LZW (Lempel-Ziv-Welch). L
 
 == Usage
 
-_TBD_
+
+Type `lzw --help` to get help. General usage:
+----
+lzw (--encode|--decode) [-o,-s] source [dest]
+----
+=== Available options
+----
+  -e,--encode                 Encode a file
+  -d,--decode                 Decode a file
+  -h,--help                   Print help message and exit
+  -o,--override               Whether output file should override existing file.
+  -s,--stats                  Print stats during and after encoding process.
+----
+By default `dest` is set to `{source}.lzw`.
+
+=== Examples
+
+*Encoding file with stats printed out* (`dest` file must not exist)
+----
+./lzw --encode -s file.txt output.lzw
+----
+*Decoding file with progress bar* (`dest file will be overwritten`)
+----
+./lzw -dso output.lzw file2.txt
+----
+
 
 == Project structure
 
@@ -37,6 +62,27 @@ _LZW_Core_ library doesn't have any external dependencies except C++ standard li
 You need https://premake.github.io/download.html[Premake5] to easily generate project files (e.g. for Visual Studio, Code::Blocks, Xcode, GNU Make and more)
 
 In root folder run `premake5` with an argument depending on IDE you want to use. For example, run: `premake5 vs2019` if you want to generate project for Visual Studio 2019.
+
+
+=== Visual Studio (Windows)
+In root folder run `premak5 vs2019`. Visual Studio solution with projects will be generated. Open `LZW.sln` with Visual Studio. Everything should be configured properly to build, run and test the program.
+
+=== Makefile (Linux)
+In root folder run `premake5 [--cc=gcc|clang] gmake2`. If `--cc` option is not set, then default C++ compiler will be used. Makefile files structure will be generated. In root folder run `make help` to get available build options. General usage is:
+----
+make [config=release|debug] [target]
+
+TARGETS:
+    all (default)
+    LZW_CLI
+    LZW_Core
+    LZW_Core_Tests
+----
+
+Executable binaries are stored in `bin/` folder. Release config is used by default.
+
+*Importnat note:* Because of using `<filesystem>` standard library in `LZW_CLI` and `LZW_Core_Tests` projects it is necessary to have it installed on your computer. If you generate project for *gcc* then library `stdc\++fs` is automatically linked via `-l` option. Note that `<filesystem>` library is available in gcc since version _8.x_. In earlier versions there was `<experimental/filesystem>`. Since version _9.x_ of gcc it's not necessary to link against `stdc++fs` anymore. *Clang* was not tested.
+
 
 == Tests
 
