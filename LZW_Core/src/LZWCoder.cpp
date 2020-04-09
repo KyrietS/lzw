@@ -11,6 +11,7 @@
 
 #include <fstream>
 #include <vector>
+#include <string>
 #include <iostream>
 #include <cmath>
 #include <unordered_map> // hash map used to be better than map for dictionary key
