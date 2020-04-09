@@ -70,6 +70,7 @@ Statistics LZWCoder::encode(const std::string & path_in, const std::string &path
 		dict[prefix] = dict.size();
 	}
 
+	clearProgress();
 	// Fill sats object and return
 	return Statistics(inStats, std::vector<uint64_t>(out.stats.begin(), out.stats.end()));
 }
@@ -119,6 +120,7 @@ void LZWCoder::decode(const std::string & path_in, const std::string & path_out)
 		bitsRead += numOfBits;
 		updateProgress((double)(bitsRead + 16) / filesize / 8);
 	}
+	clearProgress();
 }
 
 void LZWCoder::updateProgress(double progress)
@@ -128,14 +130,23 @@ void LZWCoder::updateProgress(double progress)
 
 	currentProgress = int(progress * 100.0);
 
-	int barWidth = 70;
 	std::cout << "[";
-	int pos = (int)((double)barWidth * progress);
-	for (int i = 0; i < barWidth; ++i) {
+	int pos = (int)((double)progressbarWidth * progress);
+	for (int i = 0; i < progressbarWidth; ++i) {
 		if (i < pos) std::cout << "=";
 		else if (i == pos) std::cout << ">";
 		else std::cout << " ";
 	}
 	std::cout << "] " << currentProgress << " %\r";
 	std::cout.flush();
+}
+
+void LZWCoder::clearProgress()
+{
+	if (printProgress)
+	{
+		std::cout << std::string(progressbarWidth + 8, ' ');
+		std::cout << "\r";
+		std::cout.flush();
+	}
 }
